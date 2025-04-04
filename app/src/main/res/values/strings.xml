@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">TaskFlow</string>
+
+    <!-- Navigation -->
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_categories">Categories</string>
+
+    <!-- Task list -->
+    <string name="no_tasks">No tasks available</string>
+    <string name="add_task">Add Task</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort_by_date">Date</string>
+    <string name="sort_by_priority">Priority</string>
+    <string name="sort_by_category">Category</string>
+    <string name="filter">Filter</string>
+
+    <!-- Task details -->
+    <string name="task_title">Title</string>
+    <string name="task_description">Description</string>
+    <string name="task_date">Due Date</string>
+    <string name="task_priority">Priority</string>
+    <string name="task_category">Category</string>
+    <string name="task_completed">Completed</string>
+
+    <!-- Priorities -->
+    <string name="priority_high">High</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_low">Low</string>
+
+    <!-- Task types -->
+    <string name="regular_task">Regular</string>
+    <string name="project_task">Project</string>
+    <string name="task_type">Task Type</string>
+
+    <!-- Categories -->
+    <string name="category_work">Work</string>
+    <string name="category_personal">Personal</string>
+    <string name="category_health">Health</string>
+    <string name="category_finance">Finance</string>
+    <string name="category_education">Education</string>
+    <string name="category_other">Other</string>
+    <string name="new_category">New Category</string>
+    <string name="category_name">Category Name</string>
+    <string name="category_color">Category Color</string>
+
+    <!-- Form actions -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+
+    <!-- Validation messages -->
+    <string name="error_empty_title">Title cannot be empty</string>
+    <string name="error_empty_category">Category cannot be empty</string>
+    <string name="task_saved">Task saved successfully</string>
+    <string name="task_deleted">Task deleted successfully</string>
+    <string name="category_saved">Category saved successfully</string>
+    <string name="category_deleted">Category deleted successfully</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
