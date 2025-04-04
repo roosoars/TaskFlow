@@ -1,14 +1,13 @@
 package com.roosoars.taskflow.di;
 
-
 import android.app.Application;
 
 import androidx.room.Room;
 
-import com.example.taskflow.db.AppDatabase;
-import com.example.taskflow.db.CategoryDao;
-import com.example.taskflow.db.TaskDao;
-import com.example.taskflow.observer.TaskObserver;
+import com.roosoars.taskflow.db.AppDatabase;
+import com.roosoars.taskflow.db.CategoryDao;
+import com.roosoars.taskflow.db.TaskDao;
+import com.roosoars.taskflow.observer.TaskObserver;
 
 import javax.inject.Singleton;
 

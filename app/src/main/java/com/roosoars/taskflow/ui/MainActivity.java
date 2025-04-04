@@ -1,22 +1,22 @@
 package com.roosoars.taskflow.ui;
 
-
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.taskflow.R;
-import com.example.taskflow.TaskFlowApplication;
-import com.example.taskflow.di.ViewModelFactory;
-import com.example.taskflow.observer.TaskObserver;
-import com.example.taskflow.viewmodel.TaskViewModel;
+import com.roosoars.taskflow.R;
+import com.roosoars.taskflow.TaskFlowApplication;
+import com.roosoars.taskflow.di.ViewModelFactory;
+import com.roosoars.taskflow.observer.TaskObserver;
+import com.roosoars.taskflow.viewmodel.TaskViewModel;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -46,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Set up toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Set up navigation
         bottomNavigationView = findViewById(R.id.bottom_navigation);

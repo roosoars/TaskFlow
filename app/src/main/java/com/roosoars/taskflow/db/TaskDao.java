@@ -8,8 +8,8 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
-import com.example.taskflow.model.Task;
-import com.example.taskflow.model.TaskWithCategory;
+import com.roosoars.taskflow.model.Task;
+import com.roosoars.taskflow.model.TaskWithCategory;
 
 import java.util.List;
 

@@ -2,6 +2,7 @@ package com.roosoars.taskflow;
 
 import android.app.Application;
 
+import com.roosoars.taskflow.di.AppComponent;
 import com.roosoars.taskflow.di.DaggerAppComponent;
 
 /**
@@ -9,20 +10,20 @@ import com.roosoars.taskflow.di.DaggerAppComponent;
  */
 public class TaskFlowApplication extends Application {
 
-    private DaggerAppComponent appComponent;
+    private AppComponent appComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        appComponent = (DaggerAppComponent) DaggerAppComponent.builder()
+        appComponent = DaggerAppComponent.builder()
                 .application(this)
                 .build();
 
         appComponent.inject(this);
     }
 
-    public DaggerAppComponent getAppComponent() {
+    public AppComponent getAppComponent() {
         return appComponent;
     }
 }

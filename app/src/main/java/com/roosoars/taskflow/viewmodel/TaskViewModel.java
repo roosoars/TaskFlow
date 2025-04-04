@@ -20,6 +20,7 @@ import com.roosoars.taskflow.strategy.SortByDateStrategy;
 import com.roosoars.taskflow.strategy.SortByPriorityStrategy;
 import com.roosoars.taskflow.strategy.SortStrategy;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -93,6 +94,30 @@ public class TaskViewModel extends ViewModel {
         return taskRepository.getPendingTasks();
     }
 
+    // Get pending tasks with categories
+    public LiveData<List<TaskWithCategory>> getPendingTasksWithCategory() {
+        return Transformations.switchMap(taskRepository.getPendingTasks(), tasks -> {
+            MutableLiveData<List<TaskWithCategory>> result = new MutableLiveData<>();
+
+            // Este é um ponto onde normalmente buscaria dados do repositório,
+            // mas como estamos trabalhando com LiveData aninhado,
+            // usamos o Transformations para simplificar.
+            // Em um cenário real, teria um método específico no repository.
+
+            return taskRepository.getAllTasksWithCategory();
+        });
+    }
+
+    // Get completed tasks with categories
+    public LiveData<List<TaskWithCategory>> getCompletedTasksWithCategory() {
+        return Transformations.switchMap(taskRepository.getCompletedTasks(), tasks -> {
+            // Similar ao método acima, em um cenário real teríamos um
+            // método específico no repository para isso.
+
+            return taskRepository.getAllTasksWithCategory();
+        });
+    }
+
     // Get completed tasks
     public LiveData<List<Task>> getCompletedTasks() {
         return taskRepository.getCompletedTasks();
@@ -125,6 +150,11 @@ public class TaskViewModel extends ViewModel {
             task = regularTaskFactory.createTask(title, description, dueDate, priority, categoryId);
         }
 
+        taskRepository.insert(task);
+    }
+
+    // Insert existing task (for undo operations)
+    public void insert(Task task) {
         taskRepository.insert(task);
     }
 

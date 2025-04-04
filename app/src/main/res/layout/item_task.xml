@@ -3,85 +3,122 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view_task"
-    style="@style/CardStyle"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="4dp"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="2dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp">
 
-        <View
-            android:id="@+id/view_priority_indicator"
-            android:layout_width="4dp"
-            android:layout_height="0dp"
-            android:background="@color/colorPrimary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <CheckBox
-            android:id="@+id/checkbox_completed"
-            android:layout_width="wrap_content"
+        <!-- Etiqueta de categoria  -->
+        <LinearLayout
+            android:id="@+id/label_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/view_priority_indicator"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
+            <View
+                android:id="@+id/label_category"
+                android:layout_width="40dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/label_rounded"
+                android:backgroundTint="@color/labelBlue" />
+
+            <View
+                android:id="@+id/label_priority"
+                android:layout_width="40dp"
+                android:layout_height="8dp"
+                android:background="@drawable/label_rounded"
+                android:backgroundTint="@color/priorityMedium"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <!-- Título da tarefa -->
         <TextView
             android:id="@+id/text_view_task_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
             android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
-            android:maxLines="1"
+            android:maxLines="2"
             android:textColor="@color/darkGray"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/checkbox_completed"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/checkbox_completed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_container"
             tools:text="Complete project documentation" />
 
+        <!-- Checkbox de conclusão -->
+        <CheckBox
+            android:id="@+id/checkbox_completed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:buttonTint="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_task_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_view_task_title" />
+
+        <!-- Data de vencimento -->
         <TextView
             android:id="@+id/text_view_due_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:drawablePadding="4dp"
-            android:gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
             android:textColor="@color/mediumGray"
             android:textSize="14sp"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             app:drawableStartCompat="@drawable/ic_calendar"
-            app:layout_constraintStart_toStartOf="@id/text_view_task_title"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_view_task_title"
             tools:text="Jan 15, 2023" />
 
-        <ImageView
-            android:id="@+id/image_view_category_color"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginStart="8dp"
-            android:background="@color/colorPrimary"
-            android:contentDescription="Category color indicator"
-            app:layout_constraintStart_toEndOf="@id/text_view_due_date"
-            app:layout_constraintTop_toTopOf="@id/text_view_due_date"
-            app:layout_constraintBottom_toBottomOf="@id/text_view_due_date" />
-
+        <!-- Categoria com ícone colorido -->
         <TextView
             android:id="@+id/text_view_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:drawablePadding="4dp"
             android:textColor="@color/mediumGray"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@id/image_view_category_color"
-            app:layout_constraintStart_toEndOf="@id/image_view_category_color"
-            app:layout_constraintTop_toTopOf="@id/image_view_category_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_due_date"
             tools:text="Work" />
+
+        <View
+            android:id="@+id/image_view_category_color"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/circle_shape"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_category"
+            app:layout_constraintEnd_toStartOf="@id/text_view_category"
+            app:layout_constraintTop_toTopOf="@id/text_view_category" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

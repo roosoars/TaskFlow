@@ -63,7 +63,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 // Populate initial categories
                 CategoryDao categoryDao = INSTANCE.categoryDao();
 
-                Category workCategory = new Category("Work", R.color.pastelBlue);
+                Category workCategory = new Category("Work", R.color.colorPrimary);
                 Category personalCategory = new Category("Personal", R.color.pastelPurple);
                 Category healthCategory = new Category("Health", R.color.pastelGreen);
                 Category financeCategory = new Category("Finance", R.color.pastelYellow);

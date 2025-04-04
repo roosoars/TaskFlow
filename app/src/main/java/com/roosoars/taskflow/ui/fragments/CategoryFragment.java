@@ -126,8 +126,8 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnCate
 
             // Randomly select a color from the pastel colors
             int[] colors = new int[] {
-                    R.color.pastelBlue, R.color.pastelGreen, R.color.pastelYellow,
-                    R.color.pastelPurple, R.color.pastelOrange
+                    R.color.labelRed, R.color.labelGreen, R.color.labelYellow,
+                    R.color.labelPurple, R.color.labelOrange
             };
             int randomColor = colors[(int) (Math.random() * colors.length)];
 

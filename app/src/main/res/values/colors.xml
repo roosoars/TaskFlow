@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#A7C7E7</color>
-    <color name="colorPrimaryDark">#8AA9D1</color>
-    <color name="colorAccent">#FFB6C1</color>
+    <color name="colorPrimary">#0079BF</color>
+    <color name="colorPrimaryDark">#026AA7</color>
+    <color name="colorPrimaryLight">#4D97CA</color>
+    <color name="colorAccent">#FF9F1A</color>
 
-    <color name="pastelGreen">#C1E1C1</color>
-    <color name="pastelYellow">#FDFD96</color>
-    <color name="pastelPurple">#C3B1E1</color>
-    <color name="pastelOrange">#FFD8B1</color>
+    <color name="labelGreen">#61BD4F</color>
+    <color name="labelYellow">#F2D600</color>
+    <color name="labelOrange">#FF9F1A</color>
+    <color name="labelRed">#EB5A46</color>
+    <color name="labelPurple">#C377E0</color>
+    <color name="labelBlue">#0079BF</color>
+    <color name="labelSkyBlue">#00C2E0</color>
+    <color name="labelLime">#51E898</color>
+    <color name="labelPink">#FF78CB</color>
+    <color name="labelBlack">#344563</color>
 
-    <color name="priorityHigh">#FFAAA7</color>
-    <color name="priorityMedium">#FFD8B1</color>
-    <color name="priorityLow">#C1E1C1</color>
+    <color name="priorityHigh">#EB5A46</color>
+    <color name="priorityMedium">#FF9F1A</color>
+    <color name="priorityLow">#61BD4F</color>
+
+    <color name="taskComplete">#61BD4F</color>
+    <color name="taskOverdue">#EB5A46</color>
+    <color name="taskDueSoon">#FF9F1A</color>
 
     <color name="white">#FFFFFF</color>
-    <color name="offWhite">#F8F8F8</color>
-    <color name="lightGray">#E0E0E0</color>
-    <color name="mediumGray">#B0B0B0</color>
-    <color name="darkGray">#707070</color>
-    <color name="black">#000000</color>
+    <color name="offWhite">#F4F5F7</color>
+    <color name="lightGray">#E4E6EA</color>
+    <color name="mediumGray">#8993A4</color>
+    <color name="darkGray">#172B4D</color>
+    <color name="black">#172B4D</color>
 </resources>
