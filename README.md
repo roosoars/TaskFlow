@@ -67,9 +67,9 @@ Requisitos mínimos:
 ## Screenshots
 
 <p align="center">
-  <img src="https://github.com/roosoars/TaskFlow/blob/main/1.png" width="300" alt="Lista de Tarefas"/>
-  <img src="https://github.com/roosoars/TaskFlow/blob/main/2.png" width="300" alt="Adicionar Tarefa"/>
-  <img src="https://github.com/roosoars/TaskFlow/blob/main/3.png" width="300" alt="Categorias"/>
+  <img src="https://github.com/roosoars/TaskFlow/blob/main/1.png" width="200" alt="Lista de Tarefas"/>
+  <img src="https://github.com/roosoars/TaskFlow/blob/main/2.png" width="200" alt="Adicionar Tarefa"/>
+  <img src="https://github.com/roosoars/TaskFlow/blob/main/3.png" width="200" alt="Categorias"/>
 </p>
 
 ## Estrutura do Projeto
