@@ -1,5 +1,4 @@
 <resources>
-    <!-- application theme -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -9,7 +8,6 @@
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Primary</item>
     </style>
 
-    <!-- Text styles -->
     <style name="TextHeading">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@color/darkGray</item>
@@ -34,7 +32,6 @@
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <!-- Button styles -->
     <style name="ButtonPrimary" parent="Widget.MaterialComponents.Button">
         <item name="android:textColor">@color/white</item>
         <item name="backgroundTint">@color/colorPrimary</item>
@@ -47,7 +44,6 @@
         <item name="cornerRadius">8dp</item>
     </style>
 
-    <!-- Card styles -->
     <style name="CardStyle">
         <item name="cardCornerRadius">8dp</item>
         <item name="cardElevation">2dp</item>
@@ -59,7 +55,6 @@
         <item name="cardBackgroundColor">@color/white</item>
     </style>
 
-    <!-- Input field styles -->
     <style name="InputField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/colorPrimary</item>
         <item name="boxBackgroundColor">@color/white</item>

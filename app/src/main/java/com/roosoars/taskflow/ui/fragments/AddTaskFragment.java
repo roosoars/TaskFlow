@@ -43,10 +43,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-/**
- * Fragment for adding or editing tasks
- * Follows MVC architecture as the "View" component
- */
+
 public class AddTaskFragment extends Fragment {
 
     @Inject
@@ -74,11 +71,9 @@ public class AddTaskFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inject dependencies
         ((TaskFlowApplication) requireActivity().getApplication())
                 .getAppComponent().inject(this);
 
-        // Enable options menu
         setHasOptionsMenu(true);
     }
 
@@ -88,14 +83,12 @@ public class AddTaskFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_task, container, false);
 
-        // Initialize ViewModels
         taskViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(TaskViewModel.class);
 
         categoryViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(CategoryViewModel.class);
 
-        // Initialize UI components
         editTextTitle = view.findViewById(R.id.edit_text_task_title);
         editTextDescription = view.findViewById(R.id.edit_text_task_description);
         textViewDueDate = view.findViewById(R.id.text_view_due_date);
@@ -104,24 +97,19 @@ public class AddTaskFragment extends Fragment {
         radioGroupTaskType = view.findViewById(R.id.radio_group_task_type);
         buttonSave = view.findViewById(R.id.button_save);
 
-        // Setup date picker
         setupDatePicker();
 
-        // Setup spinners
         setupPrioritySpinner();
         setupCategorySpinner();
 
-        // Get task ID from arguments
         if (getArguments() != null) {
             taskId = getArguments().getLong("taskId", -1);
 
-            // If we have a task ID, load task data
             if (taskId != -1) {
                 loadTaskData();
             }
         }
 
-        // Setup save button
         buttonSave.setOnClickListener(v -> saveTask());
 
         return view;
@@ -129,7 +117,6 @@ public class AddTaskFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        // Add delete option if editing existing task
         if (taskId != -1) {
             inflater.inflate(R.menu.menu_add_task, menu);
         }
@@ -145,9 +132,8 @@ public class AddTaskFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    // Setup date picker dialog
     private void setupDatePicker() {
-        selectedDate = new Date(); // Default to today
+        selectedDate = new Date();
         textViewDueDate.setText(dateFormat.format(selectedDate));
 
         textViewDueDate.setOnClickListener(v -> {
@@ -174,7 +160,6 @@ public class AddTaskFragment extends Fragment {
         });
     }
 
-    // Setup priority spinner
     private void setupPrioritySpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 requireContext(),
@@ -184,7 +169,6 @@ public class AddTaskFragment extends Fragment {
         spinnerPriority.setAdapter(adapter);
     }
 
-    // Setup category spinner
     private void setupCategorySpinner() {
         categoryViewModel.getAllCategories().observe(getViewLifecycleOwner(), categoryList -> {
             categories = categoryList;
@@ -201,7 +185,6 @@ public class AddTaskFragment extends Fragment {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerCategory.setAdapter(adapter);
 
-            // If editing an existing task, select the correct category
             if (currentTask != null && currentTask.getCategoryId() != null) {
                 for (int i = 0; i < categories.size(); i++) {
                     if (categories.get(i).getId() == currentTask.getCategoryId()) {
@@ -213,13 +196,11 @@ public class AddTaskFragment extends Fragment {
         });
     }
 
-    // Load task data for editing
     private void loadTaskData() {
         taskViewModel.getTaskById(taskId).observe(getViewLifecycleOwner(), task -> {
             if (task != null) {
                 currentTask = task;
 
-                // Fill UI with task data
                 editTextTitle.setText(task.getTitle());
                 editTextDescription.setText(task.getDescription());
 
@@ -230,31 +211,26 @@ public class AddTaskFragment extends Fragment {
 
                 spinnerPriority.setSelection(task.getPriority());
 
-                // Select task type radio button
                 if ("project".equals(task.getType())) {
                     radioGroupTaskType.check(R.id.radio_project_task);
                 } else {
                     radioGroupTaskType.check(R.id.radio_regular_task);
                 }
 
-                // Update button text
                 buttonSave.setText(R.string.update);
             }
         });
     }
 
-    // Save or update task
     private void saveTask() {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
 
-        // Validate title
         if (title.isEmpty()) {
             editTextTitle.setError(getString(R.string.error_empty_title));
             return;
         }
 
-        // Get selected priority
         Priority priority;
         switch (spinnerPriority.getSelectedItemPosition()) {
             case 0:
@@ -271,28 +247,23 @@ public class AddTaskFragment extends Fragment {
                 break;
         }
 
-        // Get selected category
         Long categoryId = null;
         if (spinnerCategory.getSelectedItemPosition() != AdapterView.INVALID_POSITION
                 && !categories.isEmpty()) {
             categoryId = categories.get(spinnerCategory.getSelectedItemPosition()).getId();
         }
 
-        // Get selected task type
         String taskType = "regular";
         int selectedTaskTypeId = radioGroupTaskType.getCheckedRadioButtonId();
         if (selectedTaskTypeId == R.id.radio_project_task) {
             taskType = "project";
         }
 
-        // Create or update task
         if (taskId == -1) {
-            // Create new task using builder pattern
             taskViewModel.insertWithBuilder(
                     title, description, selectedDate, priority, categoryId, taskType, false);
             Toast.makeText(getContext(), getString(R.string.task_saved), Toast.LENGTH_SHORT).show();
         } else {
-            // Update existing task
             currentTask.setTitle(title);
             currentTask.setDescription(description);
             currentTask.setDueDate(selectedDate);
@@ -304,11 +275,9 @@ public class AddTaskFragment extends Fragment {
             Toast.makeText(getContext(), getString(R.string.task_saved), Toast.LENGTH_SHORT).show();
         }
 
-        // Navigate back
         Navigation.findNavController(requireView()).navigateUp();
     }
 
-    // Delete task
     private void deleteTask() {
         if (currentTask != null) {
             taskViewModel.delete(currentTask);

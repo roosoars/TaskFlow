@@ -3,10 +3,7 @@ package com.roosoars.taskflow.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-/**
- * Entity class representing a task category
- * Applies the Single Responsibility Principle by handling only category data
- */
+
 @Entity(tableName = "categories")
 public class Category {
     @PrimaryKey(autoGenerate = true)
@@ -15,13 +12,11 @@ public class Category {
     private String name;
     private int color;
 
-    // Constructor
     public Category(String name, int color) {
         this.name = name;
         this.color = color;
     }
 
-    // Getters and Setters
     public long getId() {
         return id;
     }

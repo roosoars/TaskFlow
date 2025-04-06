@@ -22,10 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import javax.inject.Inject;
 
-/**
- * Main activity hosting the fragments
- * Follow Single Responsibility Principle by focusing only on navigation
- */
+
 public class MainActivity extends AppCompatActivity {
 
     @Inject
@@ -41,21 +38,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Inject dependencies
         ((TaskFlowApplication) getApplication()).getAppComponent().inject(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Set up toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Set up navigation
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
-        // Configure app bar with navigation
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.taskListFragment, R.id.categoryFragment
         ).build();
@@ -63,15 +56,12 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
-        // Initialize ViewModel
         taskViewModel = new ViewModelProvider(this, viewModelFactory).get(TaskViewModel.class);
 
-        // Set up badge for pending tasks
         taskBadge = bottomNavigationView.getOrCreateBadge(R.id.taskListFragment);
         taskBadge.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         taskBadge.setVisible(false);
 
-        // Observe pending tasks count
         taskViewModel.getOverdueTasksCount().observe(this, count -> {
             if (count > 0) {
                 taskBadge.setNumber(count);
@@ -81,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Add lifecycle awareness to task observer
         getLifecycle().addObserver(taskObserver);
     }
 

@@ -9,10 +9,7 @@ import com.roosoars.taskflow.db.Converters;
 
 import java.util.Date;
 
-/**
- * Entity class representing a task
- * Follows the Open/Closed Principle by allowing for extension through inheritance
- */
+
 @Entity(tableName = "tasks",
         foreignKeys = @ForeignKey(
                 entity = Category.class,
@@ -28,17 +25,15 @@ public class Task {
     private String title;
     private String description;
     private Date dueDate;
-    private int priority; // Stored as integer to simplify Room conversion
-    private Long categoryId; // Can be null
+    private int priority;
+    private Long categoryId;
     private boolean completed;
-    private String type; // For identifying different task types (Regular, Project, etc.)
+    private String type;
 
-    // Default constructor
     public Task() {
         this.completed = false;
     }
 
-    // Constructor with required fields
     public Task(String title, Date dueDate, int priority, Long categoryId, String type) {
         this.title = title;
         this.dueDate = dueDate;
@@ -48,7 +43,6 @@ public class Task {
         this.type = type;
     }
 
-    // Getters and Setters
     public long getId() {
         return id;
     }

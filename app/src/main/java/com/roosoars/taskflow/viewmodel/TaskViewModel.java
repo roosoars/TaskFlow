@@ -2,7 +2,6 @@ package com.roosoars.taskflow.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.roosoars.taskflow.builder.TaskBuilder;
@@ -26,17 +25,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-/**
- * ViewModel for Task-related operations
- * Follows MVVM architecture by separating UI state from business logic
- */
 public class TaskViewModel extends ViewModel {
 
     private final TaskRepository taskRepository;
     private final TaskDao taskDao;
     private final MutableLiveData<String> currentSortType = new MutableLiveData<>("date");
+    private final MutableLiveData<List<Task>> selectedTasks = new MutableLiveData<>(new ArrayList<>());
+    private final MutableLiveData<Boolean> isMultiSelectMode = new MutableLiveData<>(false);
 
-    // Factories for creating different types of tasks
     private final TaskFactory regularTaskFactory;
     private final TaskFactory projectTaskFactory;
 
@@ -45,15 +41,12 @@ public class TaskViewModel extends ViewModel {
         this.taskRepository = taskRepository;
         this.taskDao = taskDao;
 
-        // Initialize factories
         this.regularTaskFactory = new RegularTaskFactory();
         this.projectTaskFactory = new ProjectTaskFactory();
 
-        // Set default sort strategy
         setSortStrategy("date");
     }
 
-    // Change the sort strategy based on user selection
     public void setSortStrategy(String strategyType) {
         SortStrategy strategy;
 
@@ -67,83 +60,55 @@ public class TaskViewModel extends ViewModel {
             case "date":
             default:
                 strategy = new SortByDateStrategy(taskDao);
+                strategyType = "date";
                 break;
         }
 
         taskRepository.setSortStrategy(strategy);
+        taskRepository.setCurrentSortType(strategyType);
         currentSortType.setValue(strategyType);
     }
 
-    // Get current sort type
     public LiveData<String> getCurrentSortType() {
         return currentSortType;
     }
 
-    // Get all tasks using selected sort strategy
-    public LiveData<List<Task>> getAllTasks() {
-        return taskRepository.getAllTasks();
-    }
-
-    // Get tasks with categories
     public LiveData<List<TaskWithCategory>> getAllTasksWithCategory() {
         return taskRepository.getAllTasksWithCategory();
     }
 
-    // Get pending tasks
     public LiveData<List<Task>> getPendingTasks() {
         return taskRepository.getPendingTasks();
     }
 
-    // Get pending tasks with categories
     public LiveData<List<TaskWithCategory>> getPendingTasksWithCategory() {
-        return Transformations.switchMap(taskRepository.getPendingTasks(), tasks -> {
-            MutableLiveData<List<TaskWithCategory>> result = new MutableLiveData<>();
-
-            // Este é um ponto onde normalmente buscaria dados do repositório,
-            // mas como estamos trabalhando com LiveData aninhado,
-            // usamos o Transformations para simplificar.
-            // Em um cenário real, teria um método específico no repository.
-
-            return taskRepository.getAllTasksWithCategory();
-        });
+        return taskRepository.getPendingTasksWithCategory();
     }
 
-    // Get completed tasks with categories
     public LiveData<List<TaskWithCategory>> getCompletedTasksWithCategory() {
-        return Transformations.switchMap(taskRepository.getCompletedTasks(), tasks -> {
-            // Similar ao método acima, em um cenário real teríamos um
-            // método específico no repository para isso.
-
-            return taskRepository.getAllTasksWithCategory();
-        });
+        return taskRepository.getCompletedTasksWithCategory();
     }
 
-    // Get completed tasks
     public LiveData<List<Task>> getCompletedTasks() {
         return taskRepository.getCompletedTasks();
     }
 
-    // Get tasks by category
     public LiveData<List<Task>> getTasksByCategory(long categoryId) {
         return taskRepository.getTasksByCategory(categoryId);
     }
 
-    // Get task by ID
     public LiveData<Task> getTaskById(long taskId) {
         return taskRepository.getTaskById(taskId);
     }
 
-    // Get tasks of a specific type
     public LiveData<List<Task>> getTasksByType(String type) {
         return taskRepository.getTasksByType(type);
     }
 
-    // Insert task using a factory
     public void insert(String title, String description, Date dueDate,
                        Priority priority, Long categoryId, String taskType) {
         Task task;
 
-        // Use the factory pattern to create the appropriate task type
         if ("project".equals(taskType)) {
             task = projectTaskFactory.createTask(title, description, dueDate, priority, categoryId);
         } else {
@@ -153,12 +118,10 @@ public class TaskViewModel extends ViewModel {
         taskRepository.insert(task);
     }
 
-    // Insert existing task (for undo operations)
     public void insert(Task task) {
         taskRepository.insert(task);
     }
 
-    // Insert task using the builder pattern
     public void insertWithBuilder(String title, String description, Date dueDate,
                                   Priority priority, Long categoryId, String taskType,
                                   boolean completed) {
@@ -174,39 +137,92 @@ public class TaskViewModel extends ViewModel {
         taskRepository.insert(task);
     }
 
-    // Update task
     public void update(Task task) {
         taskRepository.update(task);
     }
 
-    // Delete task
     public void delete(Task task) {
         taskRepository.delete(task);
     }
 
-    // Mark task as complete
+    public void deleteSelectedTasks() {
+        List<Task> tasksToDelete = selectedTasks.getValue();
+        if (tasksToDelete != null && !tasksToDelete.isEmpty()) {
+            List<Long> taskIds = new ArrayList<>();
+            for (Task task : tasksToDelete) {
+                taskIds.add(task.getId());
+            }
+            taskRepository.deleteTasks(taskIds, tasksToDelete);
+            clearSelectedTasks();
+        }
+    }
+
     public void completeTask(Task task) {
         taskRepository.completeTask(task);
     }
 
-    // Get task observer for updates
+    public void toggleTaskCompletion(Task task) {
+        taskRepository.toggleTaskCompletion(task);
+    }
+
     public TaskObserver getTaskObserver() {
         return taskRepository.getTaskObserver();
     }
 
-    // Count overdue tasks
     public LiveData<Integer> getOverdueTasksCount() {
-        return Transformations.map(taskRepository.getPendingTasks(), tasks -> {
-            int count = 0;
-            Date now = new Date();
+        return taskRepository.getOverdueTasksCount();
+    }
 
-            for (Task task : tasks) {
-                if (task.getDueDate() != null && task.getDueDate().before(now)) {
-                    count++;
+
+    public LiveData<List<Task>> getSelectedTasks() {
+        return selectedTasks;
+    }
+
+    public boolean isTaskSelected(Task task) {
+        List<Task> currentSelectedTasks = selectedTasks.getValue();
+        if (currentSelectedTasks != null) {
+            for (Task selectedTask : currentSelectedTasks) {
+                if (selectedTask.getId() == task.getId()) {
+                    return true;
                 }
             }
+        }
+        return false;
+    }
 
-            return count;
-        });
+    public void toggleTaskSelection(Task task) {
+        List<Task> currentSelectedTasks = selectedTasks.getValue();
+        if (currentSelectedTasks == null) {
+            currentSelectedTasks = new ArrayList<>();
+        } else {
+            currentSelectedTasks = new ArrayList<>(currentSelectedTasks);
+        }
+
+        boolean isRemoved = false;
+        for (int i = 0; i < currentSelectedTasks.size(); i++) {
+            if (currentSelectedTasks.get(i).getId() == task.getId()) {
+                currentSelectedTasks.remove(i);
+                isRemoved = true;
+                break;
+            }
+        }
+
+        if (!isRemoved) {
+            currentSelectedTasks.add(task);
+        }
+
+        boolean inMultiSelectMode = !currentSelectedTasks.isEmpty();
+        isMultiSelectMode.setValue(inMultiSelectMode);
+
+        selectedTasks.setValue(currentSelectedTasks);
+    }
+
+    public void clearSelectedTasks() {
+        selectedTasks.setValue(new ArrayList<>());
+        isMultiSelectMode.setValue(false);
+    }
+
+    public LiveData<Boolean> isInMultiSelectMode() {
+        return isMultiSelectMode;
     }
 }

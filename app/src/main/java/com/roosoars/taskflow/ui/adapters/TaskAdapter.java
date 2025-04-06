@@ -1,6 +1,7 @@
 package com.roosoars.taskflow.ui.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,27 +20,24 @@ import com.roosoars.taskflow.R;
 import com.roosoars.taskflow.model.Priority;
 import com.roosoars.taskflow.model.Task;
 import com.roosoars.taskflow.model.TaskWithCategory;
-import com.roosoars.taskflow.ui.decorators.TaskItemDecorator;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Adapter for displaying tasks in a RecyclerView with enhanced UI
- * Follows the Adapter Pattern
- */
 public class TaskAdapter extends ListAdapter<TaskWithCategory, TaskAdapter.TaskViewHolder> {
 
     private final OnTaskClickListener listener;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
     private final Context context;
 
-    // Interface para manejo de clicks en tareas
     public interface OnTaskClickListener {
         void onTaskClick(TaskWithCategory task);
+        void onTaskLongClick(TaskWithCategory task);
         void onTaskCheckedChange(Task task, boolean isChecked);
         void onTaskSwiped(Task task, int direction);
+        boolean isTaskSelected(Task task);
     }
 
     public TaskAdapter(Context context, OnTaskClickListener listener) {
@@ -61,38 +59,29 @@ public class TaskAdapter extends ListAdapter<TaskWithCategory, TaskAdapter.TaskV
         TaskWithCategory currentItem = getItem(position);
         Task task = currentItem.getTask();
 
-        // Apply Decorator pattern for UI enhancements based on task properties
-        TaskItemDecorator decorator = new TaskItemDecorator(task);
-
-        // Set task title
         holder.textViewTitle.setText(task.getTitle());
 
-        // Apply strike-through if completed
         if (task.isCompleted()) {
             holder.textViewTitle.setPaintFlags(holder.textViewTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.cardView.setAlpha(0.8f); // Dim completed tasks
+            holder.cardView.setAlpha(0.8f);
         } else {
             holder.textViewTitle.setPaintFlags(holder.textViewTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             holder.cardView.setAlpha(1.0f);
         }
 
-        // Set due date with color coding
         if (task.getDueDate() != null) {
             Date now = new Date();
             String formattedDate = dateFormat.format(task.getDueDate());
 
             if (task.getDueDate().before(now) && !task.isCompleted()) {
-                // Overdue task
                 holder.textViewDueDate.setText("Overdue: " + formattedDate);
-                holder.textViewDueDate.setTextColor(ContextCompat.getColor(context, R.color.taskOverdue));
-            } else if (decorator.isDueSoon() && !task.isCompleted()) {
-                // Due soon
+                holder.textViewDueDate.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_light));
+            } else if (isDueSoon(task) && !task.isCompleted()) {
                 holder.textViewDueDate.setText("Due soon: " + formattedDate);
-                holder.textViewDueDate.setTextColor(ContextCompat.getColor(context, R.color.taskDueSoon));
+                holder.textViewDueDate.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_light));
             } else {
-                // Normal due date
                 holder.textViewDueDate.setText(formattedDate);
-                holder.textViewDueDate.setTextColor(ContextCompat.getColor(context, R.color.mediumGray));
+                holder.textViewDueDate.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
             }
 
             holder.textViewDueDate.setVisibility(View.VISIBLE);
@@ -100,68 +89,96 @@ public class TaskAdapter extends ListAdapter<TaskWithCategory, TaskAdapter.TaskV
             holder.textViewDueDate.setVisibility(View.GONE);
         }
 
-        // Set category with colored dot
         if (currentItem.getCategory() != null) {
             holder.textViewCategory.setText(currentItem.getCategory().getName());
             holder.textViewCategory.setVisibility(View.VISIBLE);
 
-            // Get category color
-            int categoryColor = ContextCompat.getColor(context, currentItem.getCategory().getColor());
+            int categoryColor;
+            try {
+                categoryColor = ContextCompat.getColor(context, currentItem.getCategory().getColor());
+            } catch (Resources.NotFoundException e) {
+                categoryColor = ContextCompat.getColor(context, android.R.color.holo_blue_light);
+            }
 
-            // Apply color to category indicator
             holder.categoryColorView.setBackgroundColor(categoryColor);
             holder.categoryColorView.setVisibility(View.VISIBLE);
-
-            // Set label color
-            View labelView = holder.itemView.findViewById(R.id.label_category);
-            labelView.setBackgroundTintList(ContextCompat.getColorStateList(context, currentItem.getCategory().getColor()));
         } else {
             holder.textViewCategory.setVisibility(View.GONE);
             holder.categoryColorView.setVisibility(View.GONE);
         }
 
-        // Set priority label color
-        View priorityLabel = holder.itemView.findViewById(R.id.label_priority);
-        int priorityColor;
+        updateColorBar(holder, task);
 
-        switch (task.getPriorityEnum()) {
-            case HIGH:
-                priorityColor = R.color.priorityHigh;
-                break;
-            case MEDIUM:
-                priorityColor = R.color.priorityMedium;
-                break;
-            case LOW:
-                priorityColor = R.color.priorityLow;
-                break;
-            default:
-                priorityColor = R.color.priorityMedium;
-                break;
-        }
-
-        priorityLabel.setBackgroundTintList(ContextCompat.getColorStateList(context, priorityColor));
-
-        // Set completion state
         holder.checkBoxCompleted.setChecked(task.isCompleted());
 
-        // Apply card background based on task state (Decorator pattern)
-        int cardBackgroundColor = decorator.getCardBackgroundColor(context);
-        holder.cardView.setCardBackgroundColor(cardBackgroundColor);
-
-        // Apply subtle animation
-        applyCardAnimation(holder.cardView, position);
+        boolean isSelected = listener.isTaskSelected(task);
+        holder.cardView.setActivated(isSelected);
+        if (isSelected) {
+            holder.cardView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryLight));
+        } else {
+            holder.cardView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
+        }
     }
 
-    // Add subtle animation to cards
-    private void applyCardAnimation(CardView cardView, int position) {
-        cardView.setAlpha(0f);
-        cardView.setTranslationY(50f);
-        cardView.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setDuration(300)
-                .setStartDelay(position * 50)
-                .start();
+    private void updateColorBar(TaskViewHolder holder, Task task) {
+        View priorityColorBar = holder.itemView.findViewById(R.id.priority_color_bar);
+        if (priorityColorBar != null) {
+            int barColor;
+
+            if (task.isCompleted()) {
+                barColor = ContextCompat.getColor(context, android.R.color.darker_gray);
+            }
+            else if (task.getDueDate() != null) {
+                if (isTaskDueToday(task)) {
+                    barColor = ContextCompat.getColor(context, android.R.color.holo_red_light);
+                } else if (isTaskDueTomorrow(task)) {
+                    barColor = ContextCompat.getColor(context, android.R.color.holo_orange_light);
+                } else {
+                    barColor = ContextCompat.getColor(context, R.color.colorPrimary);
+                }
+            } else {
+                barColor = ContextCompat.getColor(context, R.color.colorPrimary);
+            }
+
+            priorityColorBar.setBackgroundColor(barColor);
+        }
+    }
+
+    private boolean isTaskDueToday(Task task) {
+        if (task.getDueDate() == null) return false;
+
+        Calendar taskDate = Calendar.getInstance();
+        taskDate.setTime(task.getDueDate());
+
+        Calendar today = Calendar.getInstance();
+
+        return taskDate.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                taskDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private boolean isTaskDueTomorrow(Task task) {
+        if (task.getDueDate() == null) return false;
+
+        Calendar taskDate = Calendar.getInstance();
+        taskDate.setTime(task.getDueDate());
+
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+
+        return taskDate.get(Calendar.YEAR) == tomorrow.get(Calendar.YEAR) &&
+                taskDate.get(Calendar.DAY_OF_YEAR) == tomorrow.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private boolean isDueSoon(Task task) {
+        if (task.getDueDate() == null) {
+            return false;
+        }
+
+        Date now = new Date();
+        long diffInMillis = task.getDueDate().getTime() - now.getTime();
+        long diffInHours = diffInMillis / (60 * 60 * 1000);
+
+        return diffInHours >= 0 && diffInHours <= 24;
     }
 
     class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -171,6 +188,7 @@ public class TaskAdapter extends ListAdapter<TaskWithCategory, TaskAdapter.TaskV
         private final View categoryColorView;
         private final CheckBox checkBoxCompleted;
         private final CardView cardView;
+        private final View priorityColorBar;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -181,8 +199,8 @@ public class TaskAdapter extends ListAdapter<TaskWithCategory, TaskAdapter.TaskV
             categoryColorView = itemView.findViewById(R.id.image_view_category_color);
             checkBoxCompleted = itemView.findViewById(R.id.checkbox_completed);
             cardView = itemView.findViewById(R.id.card_view_task);
+            priorityColorBar = itemView.findViewById(R.id.priority_color_bar);
 
-            // Set click listener for the entire item
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -190,33 +208,63 @@ public class TaskAdapter extends ListAdapter<TaskWithCategory, TaskAdapter.TaskV
                 }
             });
 
-            // Set click listener for the checkbox
+            itemView.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onTaskLongClick(getItem(position));
+                    return true;
+                }
+                return false;
+            });
+
             checkBoxCompleted.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
                     TaskWithCategory taskWithCategory = getItem(position);
                     Task task = taskWithCategory.getTask();
 
-                    // Animate completion
-                    if (checkBoxCompleted.isChecked()) {
+                    boolean isCompleted = checkBoxCompleted.isChecked();
+
+                    task.setCompleted(isCompleted);
+
+                    if (isCompleted) {
+                        textViewTitle.setPaintFlags(textViewTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         cardView.animate()
                                 .alpha(0.8f)
                                 .setDuration(300)
                                 .start();
                     } else {
+                        textViewTitle.setPaintFlags(textViewTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                         cardView.animate()
                                 .alpha(1.0f)
                                 .setDuration(300)
                                 .start();
                     }
 
-                    listener.onTaskCheckedChange(task, checkBoxCompleted.isChecked());
+                    updateColorBar(this, task);
+
+                    if (task.getDueDate() != null) {
+                        Date now = new Date();
+                        String formattedDate = dateFormat.format(task.getDueDate());
+
+                        if (isCompleted) {
+                            textViewDueDate.setText(formattedDate);
+                            textViewDueDate.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+                        } else if (task.getDueDate().before(now)) {
+                            textViewDueDate.setText("Overdue: " + formattedDate);
+                            textViewDueDate.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_light));
+                        } else if (isDueSoon(task)) {
+                            textViewDueDate.setText("Due soon: " + formattedDate);
+                            textViewDueDate.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_light));
+                        }
+                    }
+
+                    listener.onTaskCheckedChange(task, isCompleted);
                 }
             });
         }
     }
 
-    // DiffUtil callback for efficient RecyclerView updates
     private static final DiffUtil.ItemCallback<TaskWithCategory> DIFF_CALLBACK = new DiffUtil.ItemCallback<TaskWithCategory>() {
         @Override
         public boolean areItemsTheSame(@NonNull TaskWithCategory oldItem, @NonNull TaskWithCategory newItem) {

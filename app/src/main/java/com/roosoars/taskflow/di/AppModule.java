@@ -14,10 +14,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Dagger module for providing application-wide dependencies
- * Implements Dependency Injection pattern
- */
+
 @Module
 public class AppModule {
 

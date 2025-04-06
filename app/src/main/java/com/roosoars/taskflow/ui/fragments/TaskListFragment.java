@@ -2,11 +2,11 @@ package com.roosoars.taskflow.ui.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -14,13 +14,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.roosoars.taskflow.R;
 import com.roosoars.taskflow.TaskFlowApplication;
@@ -35,12 +36,11 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
-/**
- * Fragment for displaying the list of tasks with enhanced UI and animations
- * Follows MVC architecture as the "View" component
- */
+
 public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClickListener {
 
     @Inject
@@ -49,21 +49,51 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
     private TaskViewModel taskViewModel;
     private TaskAdapter adapter;
     private Spinner spinnerSort;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private View emptyView;
     private ChipGroup filterChipGroup;
     private ExtendedFloatingActionButton fabAddTask;
 
+    private ActionMode actionMode;
+    private boolean isMultiSelectActive = false;
+
+    private final ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.menu_multi_select, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            if (item.getItemId() == R.id.action_delete_selected) {
+                deleteSelectedTasks();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            actionMode = null;
+            taskViewModel.clearSelectedTasks();
+            isMultiSelectActive = false;
+        }
+    };
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inject dependencies
         ((TaskFlowApplication) requireActivity().getApplication())
                 .getAppComponent().inject(this);
 
-        // Enable options menu
         setHasOptionsMenu(true);
     }
 
@@ -73,35 +103,24 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_task_list, container, false);
 
-        // Initialize ViewModel
         taskViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(TaskViewModel.class);
 
-        // Initialize UI components
         recyclerView = view.findViewById(R.id.recycler_view_tasks);
         emptyView = view.findViewById(R.id.empty_view);
         spinnerSort = view.findViewById(R.id.spinner_sort);
-        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
         filterChipGroup = view.findViewById(R.id.filter_chip_group);
         fabAddTask = view.findViewById(R.id.fab_add_task);
 
-        // Set up RecyclerView
         setupRecyclerView();
 
-        // Set up SwipeRefreshLayout
-        setupSwipeRefresh();
-
-        // Set up filter chips
         setupFilterChips();
 
-        // Set up sort spinner
         setupSortSpinner();
 
-        // Observe tasks with categories
-        observeAllTasks();
-
-        // Set up FAB
         setupFab();
+
+        setupMultiSelectObservation();
 
         return view;
     }
@@ -110,48 +129,19 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
 
-        // Create adapter
         adapter = new TaskAdapter(requireContext(), this);
         recyclerView.setAdapter(adapter);
 
-        // Add animation to the RecyclerView
-        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(
-                requireContext(), R.anim.layout_fall_down);
-        recyclerView.setLayoutAnimation(animation);
-
-        // Set up swipe actions
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
                 new SwipeToActionHelper(requireContext(), adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void setupSwipeRefresh() {
-        swipeRefreshLayout.setColorSchemeResources(
-                R.color.colorPrimary,
-                R.color.colorAccent,
-                R.color.labelGreen
-        );
-
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            // Simulate refresh
-            recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(
-                    requireContext(), R.anim.layout_fall_down));
-            recyclerView.scheduleLayoutAnimation();
-
-            // Hide refresh indicator after a delay
-            swipeRefreshLayout.postDelayed(
-                    () -> swipeRefreshLayout.setRefreshing(false),
-                    1000);
-        });
-    }
-
     private void setupFilterChips() {
-        // Get references to individual chips
         Chip chipAll = filterChipGroup.findViewById(R.id.chip_all);
         Chip chipPending = filterChipGroup.findViewById(R.id.chip_pending);
         Chip chipCompleted = filterChipGroup.findViewById(R.id.chip_completed);
 
-        // Set chip click listeners
         filterChipGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.chip_all) {
                 observeAllTasks();
@@ -171,7 +161,6 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSort.setAdapter(spinnerAdapter);
 
-        // Set initial selection based on ViewModel
         taskViewModel.getCurrentSortType().observe(getViewLifecycleOwner(), sortType -> {
             switch (sortType) {
                 case "date":
@@ -184,9 +173,17 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
                     spinnerSort.setSelection(2);
                     break;
             }
+
+            int selectedChipId = filterChipGroup.getCheckedChipId();
+            if (selectedChipId == R.id.chip_all) {
+                observeAllTasks();
+            } else if (selectedChipId == R.id.chip_pending) {
+                observePendingTasks();
+            } else if (selectedChipId == R.id.chip_completed) {
+                observeCompletedTasks();
+            }
         });
 
-        // Listen for sort selection changes
         spinnerSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -205,44 +202,41 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
             }
         });
     }
 
     private void setupFab() {
         fabAddTask.setOnClickListener(v -> {
-            // Animate the FAB
-            fabAddTask.animate()
-                    .scaleX(0.8f)
-                    .scaleY(0.8f)
-                    .setDuration(100)
-                    .withEndAction(() -> {
-                        fabAddTask.animate()
-                                .scaleX(1f)
-                                .scaleY(1f)
-                                .setDuration(100)
-                                .start();
-
-                        // Navigate to add task screen
-                        Navigation.findNavController(requireView())
-                                .navigate(R.id.action_taskListFragment_to_addTaskFragment);
-                    })
-                    .start();
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.action_taskListFragment_to_addTaskFragment);
         });
 
-        // Show/hide FAB based on scroll
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 0 && fabAddTask.isExtended()) {
-                    // Scrolling down, shrink FAB
                     fabAddTask.shrink();
                 } else if (dy < 0 && !fabAddTask.isExtended()) {
-                    // Scrolling up, extend FAB
                     fabAddTask.extend();
                 }
+            }
+        });
+    }
+
+    private void setupMultiSelectObservation() {
+        taskViewModel.isInMultiSelectMode().observe(getViewLifecycleOwner(), isMultiSelectMode -> {
+            if (isMultiSelectMode && actionMode == null) {
+                actionMode = ((AppCompatActivity) requireActivity()).startSupportActionMode(actionModeCallback);
+            } else if (!isMultiSelectMode && actionMode != null) {
+                actionMode.finish();
+            }
+
+            if (actionMode != null) {
+                List<Task> selectedTasks = taskViewModel.getSelectedTasks().getValue();
+                int count = selectedTasks != null ? selectedTasks.size() : 0;
+                actionMode.setTitle(count + " selected");
             }
         });
     }
@@ -278,12 +272,16 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
         }
     }
 
+    private void deleteSelectedTasks() {
+        taskViewModel.deleteSelectedTasks();
+        Snackbar.make(requireView(), "Tasks deleted", Snackbar.LENGTH_SHORT).show();
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_filter_completed) {
-            // Toggle between showing all tasks and only pending tasks
             if (item.isChecked()) {
                 item.setChecked(false);
                 observeAllTasks();
@@ -299,92 +297,47 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
 
     @Override
     public void onTaskClick(TaskWithCategory taskWithCategory) {
-        // Animate the clicked item
-        View view = recyclerView.findViewHolderForAdapterPosition(
-                adapter.getCurrentList().indexOf(taskWithCategory)).itemView;
+        Task task = taskWithCategory.getTask();
 
-        view.animate()
-                .scaleX(0.95f)
-                .scaleY(0.95f)
-                .setDuration(100)
-                .withEndAction(() -> {
-                    view.animate()
-                            .scaleX(1f)
-                            .scaleY(1f)
-                            .setDuration(100)
-                            .start();
+        if (taskViewModel.isInMultiSelectMode().getValue() != null
+                && taskViewModel.isInMultiSelectMode().getValue()) {
+            taskViewModel.toggleTaskSelection(task);
+        } else {
+            Bundle args = new Bundle();
+            args.putLong("taskId", task.getId());
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.action_taskListFragment_to_addTaskFragment, args);
+        }
+    }
 
-                    // Navigate to edit task screen with the task ID
-                    Bundle args = new Bundle();
-                    args.putLong("taskId", taskWithCategory.getTask().getId());
-                    Navigation.findNavController(requireView())
-                            .navigate(R.id.action_taskListFragment_to_addTaskFragment, args);
-                })
-                .start();
+    @Override
+    public void onTaskLongClick(TaskWithCategory taskWithCategory) {
+        Task task = taskWithCategory.getTask();
+
+        if (taskViewModel.isInMultiSelectMode().getValue() == null
+                || !taskViewModel.isInMultiSelectMode().getValue()) {
+            taskViewModel.toggleTaskSelection(task);
+        }
     }
 
     @Override
     public void onTaskCheckedChange(Task task, boolean isChecked) {
         task.setCompleted(isChecked);
-        if (isChecked) {
-            taskViewModel.completeTask(task);
-
-            // Show snackbar with undo option
-            Snackbar snackbar = Snackbar.make(
-                    requireView(),
-                    "Task completed!",
-                    Snackbar.LENGTH_LONG);
-
-            snackbar.setAction("UNDO", v -> {
-                task.setCompleted(false);
-                taskViewModel.update(task);
-            });
-
-            snackbar.show();
-        } else {
-            taskViewModel.update(task);
-        }
+        taskViewModel.update(task);
     }
 
     @Override
     public void onTaskSwiped(Task task, int direction) {
         if (direction == SwipeToActionHelper.SWIPE_DIRECTION_LEFT) {
-            // Swipe left to delete
-            Task deletedTask = new Task();
-            deletedTask.setId(task.getId());
-            deletedTask.setTitle(task.getTitle());
-            deletedTask.setDescription(task.getDescription());
-            deletedTask.setDueDate(task.getDueDate());
-            deletedTask.setPriority(task.getPriority());
-            deletedTask.setCategoryId(task.getCategoryId());
-            deletedTask.setCompleted(task.isCompleted());
-            deletedTask.setType(task.getType());
-
             taskViewModel.delete(task);
-
-            // Show snackbar with undo option
-            Snackbar snackbar = Snackbar.make(
-                    requireView(),
-                    "Task deleted!",
-                    Snackbar.LENGTH_LONG);
-
-            snackbar.setAction("UNDO", v -> {
-                taskViewModel.insert(deletedTask);
-            });
-
-            snackbar.show();
+            Snackbar.make(requireView(), "Task deleted", Snackbar.LENGTH_SHORT).show();
         } else if (direction == SwipeToActionHelper.SWIPE_DIRECTION_RIGHT) {
-            // Swipe right to complete/uncomplete
-            boolean newStatus = !task.isCompleted();
-            task.setCompleted(newStatus);
-
-            if (newStatus) {
-                taskViewModel.completeTask(task);
-                Snackbar.make(requireView(), "Task completed!", Snackbar.LENGTH_SHORT).show();
-            } else {
-                taskViewModel.update(task);
-                Snackbar.make(requireView(), "Task marked as pending!", Snackbar.LENGTH_SHORT).show();
-            }
+            taskViewModel.toggleTaskCompletion(task);
         }
+    }
+
+    @Override
+    public boolean isTaskSelected(Task task) {
+        return taskViewModel.isTaskSelected(task);
     }
 }

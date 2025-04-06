@@ -5,10 +5,7 @@ import com.roosoars.taskflow.model.Task;
 
 import java.util.Date;
 
-/**
- * Factory for creating project tasks
- * Implements the Factory Method Pattern
- */
+
 public class ProjectTaskFactory extends TaskFactory {
 
     private static final String TASK_TYPE = "project";

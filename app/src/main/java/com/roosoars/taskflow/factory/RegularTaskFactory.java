@@ -5,10 +5,7 @@ import com.roosoars.taskflow.model.Task;
 
 import java.util.Date;
 
-/**
- * Factory for creating regular tasks
- * Implements the Factory Method Pattern
- */
+
 public class RegularTaskFactory extends TaskFactory {
 
     private static final String TASK_TYPE = "regular";

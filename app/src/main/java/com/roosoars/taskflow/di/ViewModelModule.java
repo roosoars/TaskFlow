@@ -11,10 +11,7 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
 
-/**
- * Dagger module for providing ViewModels
- * Implements Dependency Injection pattern
- */
+
 @Module
 public abstract class ViewModelModule {
 

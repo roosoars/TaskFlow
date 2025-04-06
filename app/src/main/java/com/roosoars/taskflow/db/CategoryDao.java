@@ -11,10 +11,7 @@ import com.roosoars.taskflow.model.Category;
 
 import java.util.List;
 
-/**
- * Data Access Object for Category entities
- * Follows Interface Segregation Principle by providing specific methods for Category operations
- */
+
 @Dao
 public interface CategoryDao {
     @Insert

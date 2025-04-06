@@ -5,9 +5,7 @@ import android.app.Application;
 import com.roosoars.taskflow.di.AppComponent;
 import com.roosoars.taskflow.di.DaggerAppComponent;
 
-/**
- * Custom Application class for initializing Dagger
- */
+
 public class TaskFlowApplication extends Application {
 
     private AppComponent appComponent;

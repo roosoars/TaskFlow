@@ -13,10 +13,7 @@ import com.roosoars.taskflow.model.TaskWithCategory;
 
 import java.util.List;
 
-/**
- * Data Access Object for Task entities
- * Follows Interface Segregation Principle by providing specific methods for Task operations
- */
+
 @Dao
 public interface TaskDao {
     @Insert
@@ -30,6 +27,12 @@ public interface TaskDao {
 
     @Query("DELETE FROM tasks")
     void deleteAllTasks();
+
+    @Query("DELETE FROM tasks WHERE id IN (:taskIds)")
+    void deleteTasks(List<Long> taskIds);
+
+    @Query("UPDATE tasks SET categoryId = NULL WHERE categoryId = :categoryId")
+    void clearCategoryForTasks(long categoryId);
 
     @Query("SELECT * FROM tasks WHERE id = :id")
     LiveData<Task> getTaskById(long id);
@@ -46,15 +49,62 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks WHERE categoryId = :categoryId ORDER BY dueDate ASC")
     LiveData<List<Task>> getTasksByCategory(long categoryId);
 
+    @Query("SELECT * FROM tasks WHERE categoryId = :categoryId")
+    List<Task> getTasksByCategorySync(long categoryId);
+
     @Transaction
-    @Query("SELECT * FROM tasks ORDER BY dueDate ASC")
-    LiveData<List<TaskWithCategory>> getAllTasksWithCategory();
+    @Query("SELECT * FROM tasks ORDER BY completed ASC, dueDate ASC")
+    LiveData<List<TaskWithCategory>> getAllTasksWithCategoryByDate();
+
+    @Transaction
+    @Query("SELECT * FROM tasks ORDER BY completed ASC, priority ASC")
+    LiveData<List<TaskWithCategory>> getAllTasksWithCategoryByPriority();
+
+    @Transaction
+    @Query("SELECT * FROM tasks ORDER BY completed ASC, categoryId ASC")
+    LiveData<List<TaskWithCategory>> getAllTasksWithCategoryByCategory();
 
     @Query("SELECT * FROM tasks WHERE completed = 0 ORDER BY dueDate ASC")
-    LiveData<List<Task>> getPendingTasks();
+    LiveData<List<Task>> getPendingTasksByDate();
+
+    @Query("SELECT * FROM tasks WHERE completed = 0 ORDER BY priority ASC")
+    LiveData<List<Task>> getPendingTasksByPriority();
+
+    @Query("SELECT * FROM tasks WHERE completed = 0 ORDER BY categoryId ASC")
+    LiveData<List<Task>> getPendingTasksByCategory();
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE completed = 0 ORDER BY dueDate ASC")
+    LiveData<List<TaskWithCategory>> getPendingTasksWithCategoryByDate();
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE completed = 0 ORDER BY priority ASC")
+    LiveData<List<TaskWithCategory>> getPendingTasksWithCategoryByPriority();
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE completed = 0 ORDER BY categoryId ASC")
+    LiveData<List<TaskWithCategory>> getPendingTasksWithCategoryByCategory();
 
     @Query("SELECT * FROM tasks WHERE completed = 1 ORDER BY dueDate DESC")
-    LiveData<List<Task>> getCompletedTasks();
+    LiveData<List<Task>> getCompletedTasksByDate();
+
+    @Query("SELECT * FROM tasks WHERE completed = 1 ORDER BY priority ASC")
+    LiveData<List<Task>> getCompletedTasksByPriority();
+
+    @Query("SELECT * FROM tasks WHERE completed = 1 ORDER BY categoryId ASC")
+    LiveData<List<Task>> getCompletedTasksByCategory();
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE completed = 1 ORDER BY dueDate DESC")
+    LiveData<List<TaskWithCategory>> getCompletedTasksWithCategoryByDate();
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE completed = 1 ORDER BY priority ASC")
+    LiveData<List<TaskWithCategory>> getCompletedTasksWithCategoryByPriority();
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE completed = 1 ORDER BY categoryId ASC")
+    LiveData<List<TaskWithCategory>> getCompletedTasksWithCategoryByCategory();
 
     @Query("SELECT * FROM tasks WHERE type = :type ORDER BY dueDate ASC")
     LiveData<List<Task>> getTasksByType(String type);

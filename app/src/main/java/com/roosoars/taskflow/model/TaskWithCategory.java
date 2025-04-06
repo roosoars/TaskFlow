@@ -3,10 +3,7 @@ package com.roosoars.taskflow.model;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
-/**
- * Entity relationship class to retrieve a Task with its Category
- * Demonstrates Single Responsibility by focusing only on the relationship
- */
+
 public class TaskWithCategory {
     @Embedded
     private Task task;

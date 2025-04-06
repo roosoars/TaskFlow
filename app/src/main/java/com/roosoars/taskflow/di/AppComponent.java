@@ -13,10 +13,7 @@ import javax.inject.Singleton;
 import dagger.BindsInstance;
 import dagger.Component;
 
-/**
- * Dagger component for dependency injection in the application
- * Implements Dependency Injection pattern
- */
+
 @Singleton
 @Component(modules = {AppModule.class, ViewModelModule.class})
 public interface AppComponent {

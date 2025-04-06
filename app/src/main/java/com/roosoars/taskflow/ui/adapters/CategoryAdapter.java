@@ -16,16 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.roosoars.taskflow.R;
 import com.roosoars.taskflow.model.Category;
 
-/**
- * Adapter for displaying categories in a RecyclerView
- * Follows the Adapter Pattern
- */
+
 public class CategoryAdapter extends ListAdapter<Category, CategoryAdapter.CategoryViewHolder> {
 
     private final OnCategoryClickListener listener;
     private final Context context;
 
-    // Interface for handling category item clicks
     public interface OnCategoryClickListener {
         void onCategoryClick(Category category);
         void onCategoryLongClick(Category category);
@@ -49,25 +45,27 @@ public class CategoryAdapter extends ListAdapter<Category, CategoryAdapter.Categ
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category category = getItem(position);
 
-        // Set category name
-        holder.textViewCategoryName.setText(category.getName());
+        holder.categoryTextView.setText(category.getName());
 
-        // Set category color
-        holder.imageViewCategoryColor.setBackgroundColor(
-                ContextCompat.getColor(context, category.getColor()));
+        try {
+            holder.categoryColorView.setBackgroundColor(
+                    ContextCompat.getColor(context, category.getColor()));
+        } catch (Exception e) {
+            holder.categoryColorView.setBackgroundColor(
+                    ContextCompat.getColor(context, android.R.color.holo_blue_light));
+        }
     }
 
     class CategoryViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textViewCategoryName;
-        private final ImageView imageViewCategoryColor;
+        private final TextView categoryTextView;
+        private final ImageView categoryColorView;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            textViewCategoryName = itemView.findViewById(R.id.text_view_category_name);
-            imageViewCategoryColor = itemView.findViewById(R.id.image_view_category_color);
+            categoryTextView = itemView.findViewById(R.id.category_name);
+            categoryColorView = itemView.findViewById(R.id.image_view_category_color);
 
-            // Set click listener for the category item
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -75,7 +73,6 @@ public class CategoryAdapter extends ListAdapter<Category, CategoryAdapter.Categ
                 }
             });
 
-            // Set long click listener for the category item
             itemView.setOnLongClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -87,7 +84,6 @@ public class CategoryAdapter extends ListAdapter<Category, CategoryAdapter.Categ
         }
     }
 
-    // DiffUtil callback for efficient RecyclerView updates
     private static final DiffUtil.ItemCallback<Category> DIFF_CALLBACK = new DiffUtil.ItemCallback<Category>() {
         @Override
         public boolean areItemsTheSame(@NonNull Category oldItem, @NonNull Category newItem) {

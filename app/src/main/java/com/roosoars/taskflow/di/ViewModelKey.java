@@ -10,9 +10,7 @@ import java.lang.annotation.Target;
 
 import dagger.MapKey;
 
-/**
- * Custom annotation for Dagger to map ViewModels by class
- */
+
 @Documented
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

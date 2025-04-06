@@ -1,6 +1,7 @@
 package com.roosoars.taskflow.viewmodel;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.roosoars.taskflow.model.Category;
@@ -10,46 +11,59 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-/**
- * ViewModel for Category-related operations
- * Follows MVVM architecture by separating UI state from business logic
- */
 public class CategoryViewModel extends ViewModel {
 
     private final CategoryRepository categoryRepository;
+    private final MutableLiveData<String> actionFeedback = new MutableLiveData<>();
 
     @Inject
     public CategoryViewModel(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 
-    // Get all categories
     public LiveData<List<Category>> getAllCategories() {
         return categoryRepository.getAllCategories();
     }
 
-    // Get category by ID
     public LiveData<Category> getCategoryById(long categoryId) {
         return categoryRepository.getCategoryById(categoryId);
     }
 
-    // Insert category
     public void insert(Category category) {
         categoryRepository.insert(category);
+        actionFeedback.setValue("Category added");
     }
 
-    // Update category
     public void update(Category category) {
         categoryRepository.update(category);
+        actionFeedback.setValue("Category updated");
     }
 
-    // Delete category
     public void delete(Category category) {
-        categoryRepository.delete(category);
+        boolean hasAssociatedTasks = getTaskCountForCategory(category.getId()) > 0;
+
+        if (hasAssociatedTasks) {
+            actionFeedback.setValue("CONFIRM_DELETE_WITH_TASKS");
+        } else {
+            categoryRepository.delete(category, false);
+            actionFeedback.setValue("Category deleted");
+        }
     }
 
-    // Check if category can be safely deleted
+    public void deleteWithTasks(Category category) {
+        categoryRepository.delete(category, true);
+        actionFeedback.setValue("Category and associated tasks deleted");
+    }
+
+    public LiveData<String> getActionFeedback() {
+        return actionFeedback;
+    }
+
     public boolean canDeleteCategory(long categoryId) {
         return categoryRepository.canDeleteCategory(categoryId);
+    }
+
+    public int getTaskCountForCategory(long categoryId) {
+        return categoryRepository.getTaskCountForCategory(categoryId);
     }
 }

@@ -7,10 +7,6 @@ import com.roosoars.taskflow.model.Task;
 
 import java.util.List;
 
-/**
- * Strategy for sorting tasks by due date
- * Implements the Strategy Pattern
- */
 public class SortByDateStrategy implements SortStrategy {
 
     private final TaskDao taskDao;

@@ -1,8 +1,6 @@
 package com.roosoars.taskflow.model;
 
-/**
- * Enum representing task priority levels
- */
+
 public enum Priority {
     HIGH,
     MEDIUM,

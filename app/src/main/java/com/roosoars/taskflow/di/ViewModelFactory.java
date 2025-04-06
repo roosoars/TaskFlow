@@ -10,10 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-/**
- * Factory for creating ViewModels with dependencies
- * Part of the Dependency Injection pattern implementation
- */
+
 @Singleton
 public class ViewModelFactory implements ViewModelProvider.Factory {
 

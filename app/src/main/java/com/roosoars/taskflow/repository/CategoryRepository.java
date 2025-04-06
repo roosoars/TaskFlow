@@ -4,39 +4,39 @@ import androidx.lifecycle.LiveData;
 
 import com.roosoars.taskflow.db.AppDatabase;
 import com.roosoars.taskflow.db.CategoryDao;
+import com.roosoars.taskflow.db.TaskDao;
 import com.roosoars.taskflow.model.Category;
+import com.roosoars.taskflow.model.Task;
+import com.roosoars.taskflow.observer.TaskObserver;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/**
- * Repository for handling category data operations
- * Follows the Repository Pattern to abstract data sources
- * Applies the Dependency Inversion Principle by depending on abstractions
- */
 @Singleton
 public class CategoryRepository {
 
     private final CategoryDao categoryDao;
+    private final TaskDao taskDao;
+    private final TaskObserver taskObserver;
 
     @Inject
-    public CategoryRepository(AppDatabase database) {
+    public CategoryRepository(AppDatabase database, TaskObserver taskObserver) {
         this.categoryDao = database.categoryDao();
+        this.taskDao = database.taskDao();
+        this.taskObserver = taskObserver;
     }
 
-    // Get all categories
     public LiveData<List<Category>> getAllCategories() {
         return categoryDao.getAllCategories();
     }
 
-    // Get category by ID
     public LiveData<Category> getCategoryById(long categoryId) {
         return categoryDao.getCategoryById(categoryId);
     }
 
-    // Insert a category
     public void insert(Category category) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             long id = categoryDao.insert(category);
@@ -44,21 +44,40 @@ public class CategoryRepository {
         });
     }
 
-    // Update a category
     public void update(Category category) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             categoryDao.update(category);
         });
     }
 
-    // Delete a category
-    public void delete(Category category) {
+    public void delete(Category category, boolean deleteTasks) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
+            if (deleteTasks) {
+                List<Task> tasksToDelete = getTasksWithCategorySync(category.getId());
+                if (tasksToDelete != null && !tasksToDelete.isEmpty()) {
+                    for (Task task : tasksToDelete) {
+                        taskDao.delete(task);
+                        taskObserver.notifyTaskDeleted(task);
+                    }
+                }
+            } else {
+                taskDao.clearCategoryForTasks(category.getId());
+            }
+
             categoryDao.delete(category);
         });
     }
 
-    // Check if category can be safely deleted (has no associated tasks)
+    private List<Task> getTasksWithCategorySync(long categoryId) {
+        try {
+            return AppDatabase.databaseWriteExecutor.submit(() ->
+                    taskDao.getTasksByCategorySync(categoryId)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public boolean canDeleteCategory(long categoryId) {
         final boolean[] canDelete = {false};
         try {
@@ -70,5 +89,15 @@ public class CategoryRepository {
             e.printStackTrace();
         }
         return canDelete[0];
+    }
+
+    public int getTaskCountForCategory(long categoryId) {
+        try {
+            return AppDatabase.databaseWriteExecutor.submit(() ->
+                    categoryDao.getTaskCountForCategory(categoryId)).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 }

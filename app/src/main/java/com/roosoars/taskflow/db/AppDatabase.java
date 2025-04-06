@@ -16,27 +16,20 @@ import com.roosoars.taskflow.model.Task;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Room database implementation
- * Implements the Singleton pattern to ensure a single database instance
- */
+
 @Database(entities = {Task.class, Category.class}, version = 1, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
-    // DAOs
     public abstract TaskDao taskDao();
     public abstract CategoryDao categoryDao();
 
-    // Singleton instance
     private static volatile AppDatabase INSTANCE;
 
-    // Thread pool for database operations
     private static final int NUMBER_OF_THREADS = 4;
     public static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-    // Get singleton instance
     public static AppDatabase getInstance(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -53,21 +46,19 @@ public abstract class AppDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    // Callback to populate database with initial data
     private static final RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
 
             databaseWriteExecutor.execute(() -> {
-                // Populate initial categories
                 CategoryDao categoryDao = INSTANCE.categoryDao();
 
                 Category workCategory = new Category("Work", R.color.colorPrimary);
-                Category personalCategory = new Category("Personal", R.color.pastelPurple);
-                Category healthCategory = new Category("Health", R.color.pastelGreen);
-                Category financeCategory = new Category("Finance", R.color.pastelYellow);
-                Category educationCategory = new Category("Education", R.color.pastelOrange);
+                Category personalCategory = new Category("Personal", R.color.labelPurple);
+                Category healthCategory = new Category("Health", R.color.labelGreen);
+                Category financeCategory = new Category("Finance", R.color.labelYellow);
+                Category educationCategory = new Category("Education", R.color.labelOrange);
 
                 categoryDao.insert(workCategory);
                 categoryDao.insert(personalCategory);
