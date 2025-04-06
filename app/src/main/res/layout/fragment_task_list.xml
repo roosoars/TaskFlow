@@ -30,8 +30,8 @@
                     android:id="@+id/text_view_board_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your Tasks"
-                    android:textColor="@color/darkGray"
+                    android:text="Suas Tarefas"
+                    android:textColor="@color/colorPrimaryDark"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:letterSpacing="0.02"
@@ -51,7 +51,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sort by:"
+                        android:text="Filtrar:"
                         android:textSize="14sp"
                         android:textColor="@color/mediumGray"
                         android:layout_marginEnd="8dp"/>
@@ -80,15 +80,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="All"
-                        app:chipBackgroundColor="@color/chip_background_color" />
+                        android:text="Todas"
+                        app:chipBackgroundColor="@color/lightGray" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_pending"
                         style="@style/Widget.MaterialComponents.Chip.Choice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pending"
+                        android:text="Pendente"
                         app:chipBackgroundColor="@color/chip_background_color" />
 
                     <com.google.android.material.chip.Chip
@@ -96,7 +96,7 @@
                         style="@style/Widget.MaterialComponents.Chip.Choice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Completed"
+                        android:text="Completada"
                         app:chipBackgroundColor="@color/chip_background_color" />
 
                 </com.google.android.material.chip.ChipGroup>
@@ -143,16 +143,6 @@
             android:textColor="@color/mediumGray"
             android:textSize="18sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:padding="16dp"
-            android:text="Tap the + button to add your first task"
-            android:textColor="@color/mediumGray"
-            android:textSize="16sp" />
-
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -162,7 +152,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="@string/add_task"
-        android:text="Add Task"
+        android:text="Adicionar Tarefa"
         android:textColor="@color/white"
         app:backgroundTint="@color/colorPrimary"
         app:icon="@drawable/ic_add"

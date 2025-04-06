@@ -44,7 +44,7 @@ public class TaskObserver implements LifecycleObserver {
         for (TaskChangeListener listener : listeners) {
             listener.onTaskAdded(task);
         }
-        Log.d(TAG, "Task added: " + task.getTitle());
+        Log.d(TAG, "Tarefa Adicionada: " + task.getTitle());
     }
 
     public void notifyTaskUpdated(Task task) {
@@ -57,7 +57,7 @@ public class TaskObserver implements LifecycleObserver {
         for (TaskChangeListener listener : listeners) {
             listener.onTaskUpdated(task);
         }
-        Log.d(TAG, "Task updated: " + task.getTitle());
+        Log.d(TAG, "Tarefa Atualizada: " + task.getTitle());
     }
 
     public void notifyTaskDeleted(Task task) {
@@ -65,7 +65,7 @@ public class TaskObserver implements LifecycleObserver {
         for (TaskChangeListener listener : listeners) {
             listener.onTaskDeleted(task);
         }
-        Log.d(TAG, "Task deleted: " + task.getTitle());
+        Log.d(TAG, "Tarefa Deletada: " + task.getTitle());
     }
 
     public void notifyTaskCompleted(Task task) {
@@ -78,7 +78,7 @@ public class TaskObserver implements LifecycleObserver {
         for (TaskChangeListener listener : listeners) {
             listener.onTaskCompleted(task);
         }
-        Log.d(TAG, "Task completed: " + task.getTitle());
+        Log.d(TAG, "Tarefa Completa: " + task.getTitle());
     }
 
     public int getUpcomingTasksCount() {

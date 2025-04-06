@@ -274,7 +274,7 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
 
     private void deleteSelectedTasks() {
         taskViewModel.deleteSelectedTasks();
-        Snackbar.make(requireView(), "Tasks deleted", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(requireView(), "Tarefa Deletada", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -330,7 +330,7 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
     public void onTaskSwiped(Task task, int direction) {
         if (direction == SwipeToActionHelper.SWIPE_DIRECTION_LEFT) {
             taskViewModel.delete(task);
-            Snackbar.make(requireView(), "Task deleted", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(requireView(), "Tarefa Deletada", Snackbar.LENGTH_SHORT).show();
         } else if (direction == SwipeToActionHelper.SWIPE_DIRECTION_RIGHT) {
             taskViewModel.toggleTaskCompletion(task);
         }

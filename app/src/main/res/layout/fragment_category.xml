@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="No categories available"
+            android:text="Nenhuma categoria disponivel"
             android:textSize="18sp"
             android:textColor="@color/mediumGray" />
 
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="Add Category"
+        android:contentDescription="Adicionar Categoria"
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@drawable/ic_add"
         app:tint="@color/white" />

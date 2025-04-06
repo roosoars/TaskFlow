@@ -10,10 +10,10 @@ public class TaskBuilder {
     private String title;
     private String description;
     private Date dueDate;
-    private Priority priority = Priority.MEDIUM; // Default priority
+    private Priority priority = Priority.MEDIUM;
     private Long categoryId;
     private boolean completed = false;
-    private String type = "regular"; // Default type
+    private String type = "regular";
 
 
     public static TaskBuilder aTask(String title) {

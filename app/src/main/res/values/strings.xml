@@ -1,53 +1,53 @@
 <resources>
     <string name="app_name">TaskFlow</string>
 
-    <string name="nav_tasks">Tasks</string>
-    <string name="nav_categories">Categories</string>
+    <string name="nav_tasks">Tarefas</string>
+    <string name="nav_categories">Categorias</string>
 
-    <string name="no_tasks">No tasks available</string>
-    <string name="add_task">Add Task</string>
-    <string name="sort_by">Sort by</string>
-    <string name="sort_by_date">Date</string>
-    <string name="sort_by_priority">Priority</string>
-    <string name="sort_by_category">Category</string>
-    <string name="filter">Filter</string>
+    <string name="no_tasks">Você não tem nenhuma tarefa</string>
+    <string name="add_task">Adicionar Tarefa</string>
+    <string name="sort_by">Filtrar</string>
+    <string name="sort_by_date">Data</string>
+    <string name="sort_by_priority">Prioridade</string>
+    <string name="sort_by_category">Categoria</string>
+    <string name="filter">Filtro</string>
 
-    <string name="task_title">Title</string>
-    <string name="task_description">Description</string>
-    <string name="task_date">Due Date</string>
-    <string name="task_priority">Priority</string>
-    <string name="task_category">Category</string>
-    <string name="task_completed">Completed</string>
+    <string name="task_title">Titulo</string>
+    <string name="task_description">Descrição</string>
+    <string name="task_date">Data</string>
+    <string name="task_priority">Prioridade</string>
+    <string name="task_category">Categoria</string>
+    <string name="task_completed">Completado</string>
 
-    <string name="priority_high">High</string>
-    <string name="priority_medium">Medium</string>
-    <string name="priority_low">Low</string>
+    <string name="priority_high">Alta</string>
+    <string name="priority_medium">Normal</string>
+    <string name="priority_low">Baixa</string>
 
     <string name="regular_task">Regular</string>
-    <string name="project_task">Project</string>
-    <string name="task_type">Task Type</string>
+    <string name="project_task">Projeto</string>
+    <string name="task_type">Tipo</string>
 
-    <string name="category_work">Work</string>
-    <string name="category_personal">Personal</string>
-    <string name="category_health">Health</string>
-    <string name="category_finance">Finance</string>
-    <string name="category_education">Education</string>
-    <string name="category_other">Other</string>
-    <string name="new_category">New Category</string>
-    <string name="category_name">Category Name</string>
-    <string name="category_color">Category Color</string>
+    <string name="category_work">Trabalho</string>
+    <string name="category_personal">Pessoal</string>
+    <string name="category_health">Saúde</string>
+    <string name="category_finance">Financeiro</string>
+    <string name="category_education">Educacional</string>
+    <string name="category_other">Outros</string>
+    <string name="new_category">Nova Categoria</string>
+    <string name="category_name">Nome da Categoria</string>
+    <string name="category_color">Cor da Categoria</string>
 
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-    <string name="delete">Delete</string>
-    <string name="edit">Edit</string>
+    <string name="save">Salvar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Deletar</string>
+    <string name="edit">Editar</string>
 
-    <string name="error_empty_title">Title cannot be empty</string>
-    <string name="error_empty_category">Category cannot be empty</string>
-    <string name="task_saved">Task saved successfully</string>
-    <string name="task_deleted">Task deleted successfully</string>
-    <string name="category_saved">Category saved successfully</string>
-    <string name="category_deleted">Category deleted successfully</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="error_empty_title">Titulo não pode ficar vazio</string>
+    <string name="error_empty_category">Categoria não pode ficar vazia</string>
+    <string name="task_saved">Tarefa salva com sucesso</string>
+    <string name="task_deleted">Tarefa deletada com sucesso</string>
+    <string name="category_saved">Categoria salva com sucesso</string>
+    <string name="category_deleted">Categoria Deletada com sucesso</string>
+    <string name="hello_blank_fragment">HELLO_BLANK</string>
     <string name="update">Salvar</string>
 </resources>

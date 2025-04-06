@@ -148,14 +148,14 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnCate
 
         if (taskCount > 0) {
             String message = "Delete " + category.getName() + "?\n\n" +
-                    "This category has " + taskCount + " tasks associated with it.";
+                    "Essa categoria está associada a " + taskCount + " tarefas.";
             builder.setMessage(message);
 
-            builder.setNeutralButton("Keep Tasks", (dialog, which) -> {
+            builder.setNeutralButton("Mantenha as tarefas", (dialog, which) -> {
                 categoryViewModel.delete(category);
             });
 
-            builder.setPositiveButton("Delete All", (dialog, which) -> {
+            builder.setPositiveButton("Delete tudo", (dialog, which) -> {
                 categoryViewModel.deleteWithTasks(category);
             });
 

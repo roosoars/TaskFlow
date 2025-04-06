@@ -8,4 +8,5 @@
         android:id="@+id/categoryFragment"
         android:icon="@drawable/ic_category"
         android:title="@string/nav_categories" />
+
 </menu>

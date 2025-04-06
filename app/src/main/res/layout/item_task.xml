@@ -49,7 +49,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/checkbox_completed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Complete project documentation" />
+                tools:text="Titulo" />
 
             <CheckBox
                 android:id="@+id/checkbox_completed"
@@ -84,7 +84,7 @@
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_view_due_date"
-                tools:text="Work" />
+                tools:text="POO-2" />
 
             <View
                 android:id="@+id/image_view_category_color"
