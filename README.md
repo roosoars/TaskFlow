@@ -44,7 +44,7 @@ TaskFlow implementa diversos padrões de design e princípios SOLID:
 - **Repository Pattern**: Abstração do acesso a dados
 - **Decorator Pattern**: Adição de comportamentos visuais às tarefas
 
-*Para mais detalhes sobre a implementação destes padrões, consulte a [Wiki do projeto](link-para-sua-wiki).*
+*Para mais detalhes sobre a implementação destes padrões, consulte a [Wiki do projeto](https://github.com/roosoars/TaskFlow/wiki/APP-%E2%80%90-Documentação).*
 
 ## Instalação
 
