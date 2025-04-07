@@ -99,5 +99,5 @@ app/src/main/java/com/roosoars/taskflow/
 ---
 
 <p align="center">
-  Desenvolvido como projeto acadêmico para Programação Orientada a Objetos II - Universidade Federal de Uberlândia.
+  Desenvolvido como projeto acadêmico para Programação Orientada a Objetos II.
 </p>
